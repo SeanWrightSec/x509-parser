@@ -17,6 +17,13 @@ def x509_name_to_json(x509_name):
 class x509Parser:
 
     def x509_to_str(x509_cert):
+        cert_str = x509Parser.parse_x509(x509_cert)
+
+        return json.dumps(cert_str, indent=4)
+
+    def parse_x509(cert):
+        x509_cert = crypto.load_certificate(crypto.FILETYPE_PEM, cert)
+    
         cert = {
             "subject": x509_name_to_json(x509_cert.get_subject()),
             "issuer": x509_name_to_json(x509_cert.get_issuer()),
@@ -25,8 +32,3 @@ class x509Parser:
         }
 
         return cert
-
-    def parse_x509(cert):
-        x509_cert = crypto.load_certificate(crypto.FILETYPE_PEM, cert)
-    
-        print(json.dumps(x509Parser.x509_to_str(x509_cert), indent = 4))
