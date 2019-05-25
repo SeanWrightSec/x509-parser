@@ -54,7 +54,7 @@ def main(argv):
     print(x509Parser.x509_to_str(cert))
 
 def print_help():
-    print("x509_parser.py -h <host> -p <port> -f <input-file> -d")
+    print("x509_parser.py -i <host> -p <port> -f <input-file> -d")
 
 def get_certificate(host, port=443, timeout=10):
     context = ssl.create_default_context()
