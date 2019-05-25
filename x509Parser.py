@@ -46,6 +46,4 @@ class x509Parser:
             "pulic-key-length": x509_cert.get_pubkey().bits()
         }
 
-        print(x509_extensions_to_json(x509_cert))
-
         return cert
