@@ -14,6 +14,14 @@ def x509_name_to_json(x509_name):
 
     return json
 
+def x509_extensions_to_json(x509_cert):
+    json = { }
+    for ext_index in range(0, x509_cert.get_extension_count(), 1):
+        extension = x509_cert.get_extension(ext_index)
+        json.update({ bytes_to_string(extension.get_short_name()): str(extension) })
+
+    return json
+
 class x509Parser:
 
     def x509_to_str(x509_cert):
@@ -27,8 +35,17 @@ class x509Parser:
         cert = {
             "subject": x509_name_to_json(x509_cert.get_subject()),
             "issuer": x509_name_to_json(x509_cert.get_issuer()),
-            "expiry": str(datetime.strptime(bytes_to_string(x509_cert.get_notAfter()), '%Y%m%d%H%M%SZ')),
-            "not-before": str(datetime.strptime(bytes_to_string(x509_cert.get_notBefore()), '%Y%m%d%H%M%SZ'))
+            "has-expired": x509_cert.has_expired(),
+            "not-after": str(datetime.strptime(bytes_to_string(x509_cert.get_notAfter()), '%Y%m%d%H%M%SZ')),
+            "not-before": str(datetime.strptime(bytes_to_string(x509_cert.get_notBefore()), '%Y%m%d%H%M%SZ')),
+            "extensions": x509_extensions_to_json(x509_cert),
+            "serial-number": x509_cert.get_serial_number(),
+            "serial-number(hex)": hex(x509_cert.get_serial_number()),
+            "signature-algorithm": bytes_to_string(x509_cert.get_signature_algorithm()),
+            "version": x509_cert.get_version(),
+            "pulic-key-length": x509_cert.get_pubkey().bits()
         }
+
+        print(x509_extensions_to_json(x509_cert))
 
         return cert
