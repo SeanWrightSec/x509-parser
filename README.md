@@ -6,7 +6,13 @@ Simple Python (only supports Python3) utility to help parse X509 certificates. T
 
 This tool supports the ability to parse multiple X509 certificates from either a specified file, or via command line input into the tool.
 
-Usage of the tool is as follows:
+### Installation
+
+Install the required modules:
+
+`pip install -r requirements.txt`
+
+### Usage
 
 #### For parsing a X509 certificate from a web server:
 
