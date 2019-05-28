@@ -34,6 +34,10 @@ To use a custom port:
 
 All format of the tool is produced in JSON format. By default the tool will dump the parsing of the certificates in to the standard output. There is support to have the output placed into a file instead, which can be done via the argument `-o` or `--output` followed by the filename of the file to place the output into.
 
+#### Certificate Validation
+
+You can ignore certificate validation (only applicable when obtaining a certificate from a server), by specifying the argument `-v` or `--ignore-cert-validation`.
+
 #### X509 Certificate Extensions
 
 Due to what appears to be a bug in the OpenSSL Python library (an error occurs while attempting to obtain the extensions of some certificates), there is a flag which enables to one to ignore the extension field (i.e. don't include it in the parsing of the X509 certificates). You can set this flag via the `-e` or `--ignore-extensions` arguments.

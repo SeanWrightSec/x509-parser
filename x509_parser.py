@@ -12,7 +12,7 @@ END_X509_CERT = "-----END CERTIFICATE-----"
 
 def main(argv):
     try:
-        opts, args = getopt.getopt(argv, "hi:p:f:deo:", ["help", "host=", "port=", "file=", "dump", "ignore-extensions", "ouput"])
+        opts, args = getopt.getopt(argv, "hi:p:f:deo:v", ["help", "host=", "port=", "file=", "dump", "ignore-extensions", "ignore-cert-validation", "ouput"])
     except getopt.GetoptError as err:
         print(err)
         print_help()
@@ -22,6 +22,7 @@ def main(argv):
     host = None
     port = None
     ignore_extensions = False
+    ignore_cert_validation = False
     file_output = None
 
     for opt, arg in opts:
@@ -46,6 +47,8 @@ def main(argv):
                 line = input()
 
             cert_list = parse_multi_certs(cert_input)
+        elif opt in ("-v", "--ignore-cert-validation"):
+            ignore_cert_validation = True
         elif opt in ("-o", "--output"):
             file_output = arg
         else:
@@ -53,9 +56,9 @@ def main(argv):
             sys.exit(2)
 
     if (host and port):
-        cert_list = [get_certificate(host, port)]
+        cert_list = [get_certificate(host, port, ignore_cert_validation=ignore_cert_validation)]
     elif (host):
-        cert_list = [get_certificate(host)]
+        cert_list = [get_certificate(host, ignore_cert_validation=ignore_cert_validation)]
 
     x509_array = []
     for cert in cert_list:
@@ -82,10 +85,16 @@ def print_help():
     print("-f (--file) = the filename of the file containing the X509 certificates.")
     print("-d (--dump) = past in a collection of X509 certificates.")
     print("-e (--ignore-extensions = do not include extensions in the parse output.")
+    print("-v (--ignore-cert-validation = ignore certificate validation.")
     print("-o (--output) = filename to put the output into instead of the standard output.")
 
-def get_certificate(host, port=443, timeout=10):
+def get_certificate(host, port=443, timeout=10, ignore_cert_validation=False):
     context = ssl.create_default_context()
+
+    if (ignore_cert_validation):
+        context.check_hostname = False
+        context.verify_mode = ssl.CERT_NONE
+
     connection = socket.create_connection((host, port))
     sock = context.wrap_socket(connection, server_hostname=host)
     sock.settimeout(timeout)
