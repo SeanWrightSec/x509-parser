@@ -32,32 +32,20 @@ class x509Parser:
     def parse_x509(cert,ignore_extensions=False):
         x509_cert = crypto.load_certificate(crypto.FILETYPE_PEM, cert)
 
+        cert = {
+                "subject": x509_name_to_json(x509_cert.get_subject()),
+                "issuer": x509_name_to_json(x509_cert.get_issuer()),
+                "has-expired": x509_cert.has_expired(),
+                "not-after": str(datetime.strptime(bytes_to_string(x509_cert.get_notAfter()), '%Y%m%d%H%M%SZ')),
+                "not-before": str(datetime.strptime(bytes_to_string(x509_cert.get_notBefore()), '%Y%m%d%H%M%SZ')),
+                "serial-number": x509_cert.get_serial_number(),
+                "serial-number(hex)": hex(x509_cert.get_serial_number()),
+                "signature-algorithm": bytes_to_string(x509_cert.get_signature_algorithm()),
+                "version": x509_cert.get_version(),
+                "pulic-key-length": x509_cert.get_pubkey().bits()
+            }
+
         if (not ignore_extensions):
-            cert = {
-                "subject": x509_name_to_json(x509_cert.get_subject()),
-                "issuer": x509_name_to_json(x509_cert.get_issuer()),
-                "has-expired": x509_cert.has_expired(),
-                "not-after": str(datetime.strptime(bytes_to_string(x509_cert.get_notAfter()), '%Y%m%d%H%M%SZ')),
-                "not-before": str(datetime.strptime(bytes_to_string(x509_cert.get_notBefore()), '%Y%m%d%H%M%SZ')),
-                "extensions": x509_extensions_to_json(x509_cert),
-                "serial-number": x509_cert.get_serial_number(),
-                "serial-number(hex)": hex(x509_cert.get_serial_number()),
-                "signature-algorithm": bytes_to_string(x509_cert.get_signature_algorithm()),
-                "version": x509_cert.get_version(),
-                "pulic-key-length": x509_cert.get_pubkey().bits()
-            }
-        else:
-            cert = {
-                "subject": x509_name_to_json(x509_cert.get_subject()),
-                "issuer": x509_name_to_json(x509_cert.get_issuer()),
-                "has-expired": x509_cert.has_expired(),
-                "not-after": str(datetime.strptime(bytes_to_string(x509_cert.get_notAfter()), '%Y%m%d%H%M%SZ')),
-                "not-before": str(datetime.strptime(bytes_to_string(x509_cert.get_notBefore()), '%Y%m%d%H%M%SZ')),
-                "serial-number": x509_cert.get_serial_number(),
-                "serial-number(hex)": hex(x509_cert.get_serial_number()),
-                "signature-algorithm": bytes_to_string(x509_cert.get_signature_algorithm()),
-                "version": x509_cert.get_version(),
-                "pulic-key-length": x509_cert.get_pubkey().bits()
-            }
+            cert.update({"extensions": x509_extensions_to_json(x509_cert)})
 
         return cert
